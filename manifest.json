@@ -26,6 +26,7 @@
 
   "background": {
     "scripts": [
+      "lib/incident-badge.js",
       "lib/pd-api.js",
       "account-specific-settings.js",
       "background.js"

@@ -8,6 +8,7 @@ const pollParams = {
 const pollIntervalInSeconds = 15;
 const notificationTimeoutInSeconds = 4;
 const pdapi = new PagerDutyAPI(pagerDutyApiKey);
+const incidentBadge = new IncidentBadge();
 
 var knownIncidentIdsState = new Set();
 
@@ -25,7 +26,7 @@ const categorizeIncidentIds = (knownIncidentIds) => (incidents) => ({
 
 const pollIncidentsAndShowThem = (pollParams) => () =>
   pollNewIncidents(pollParams)
-    .then(tap(updateBadge))
+    .then(tap(incidentBadge.updateBadge))
     .then(categorizeIncidentIds(knownIncidentIdsState))
     .then(tap(updateKnownIncidents))
     .then(tap(showNotificationsForNewIncidents))
@@ -44,25 +45,6 @@ const pollUrlParameters = ({ statuses, teamIds, urgencies }) => [
 function pollNewIncidents(pollParameters) {
   var url = 'https://api.pagerduty.com/incidents?' + pollUrlParameters(pollParameters).join('&');
   return pdapi.GET(url).then((data) => data.incidents);
-}
-
-function updateBadge(incidents) {
-  const lowCount = incidents.filter(incident => incident.urgency == 'low').length;
-  const highCount = incidents.filter(incident => incident.urgency == 'high').length;
-
-  browser.browserAction.setBadgeText({ text: badgeText(lowCount, highCount) });
-  browser.browserAction.setBadgeBackgroundColor({ color: badgeBackgroundColor(highCount) });
-  browser.browserAction.setBadgeTextColor({ color: 'white' });
-}
-
-function badgeText(lowCount, highCount) {
-  if (highCount > 0) return highCount.toString();
-  return lowCount.toString();
-}
-
-function badgeBackgroundColor(highCount) {
-  if (highCount > 0) return 'red';
-  return 'grey';
 }
 
 function showIncidentNotification(incident) {
