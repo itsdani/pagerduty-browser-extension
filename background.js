@@ -38,15 +38,6 @@ const updateKnownIncidents = ({ knownIncidentIds }) => {
   knownIncidentIdsState = knownIncidentIds;
 }
 
-const tap = (fn) => (data) => {
-  fn(data);
-  return data;
-}
-
-function logJson(data) {
-  console.log(JSON.stringify(data));
-}
-
 setInterval(pollIncidentsAndShowThem(POLL_PARAMS), POLL_INTERVAL_IN_SECONDS * 1000);
 setTimeout(pollIncidentsAndShowThem(POLL_PARAMS), 100);
 browser.browserAction.onClicked.addListener(openPagerDutyWebsite({ account, statuses: ON_CLICK_STATUSES }));
