@@ -26,6 +26,8 @@
 
   "background": {
     "scripts": [
+      "lib/pd-client.js",
+      "lib/incident-notification.js",
       "lib/incident-badge.js",
       "lib/pd-api.js",
       "account-specific-settings.js",
