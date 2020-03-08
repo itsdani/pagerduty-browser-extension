@@ -1,7 +1,7 @@
 const onClickStatuses = ['triggered', 'acknowledged'];
 const pollParams = {
   statuses: ['triggered', 'acknowledged'],
-  urgencies: ['high'], // ['high','low']
+  urgencies: ['high', 'low'],
   teamIds
 }
 
@@ -47,7 +47,22 @@ function pollNewIncidents(pollParameters) {
 }
 
 function updateBadge(incidents) {
-  browser.browserAction.setBadgeText({ text: incidents.length.toString() });
+  const lowCount = incidents.filter(incident => incident.urgency == 'low').length;
+  const highCount = incidents.filter(incident => incident.urgency == 'high').length;
+
+  browser.browserAction.setBadgeText({ text: badgeText(lowCount, highCount) });
+  browser.browserAction.setBadgeBackgroundColor({ color: badgeBackgroundColor(highCount) });
+  browser.browserAction.setBadgeTextColor({ color: 'white' });
+}
+
+function badgeText(lowCount, highCount) {
+  if (highCount > 0) return highCount.toString();
+  return lowCount.toString();
+}
+
+function badgeBackgroundColor(highCount) {
+  if (highCount > 0) return 'red';
+  return 'grey';
 }
 
 function showIncidentNotification(incident) {
@@ -84,5 +99,5 @@ function logJson(data) {
 }
 
 setInterval(pollIncidentsAndShowThem(pollParams), pollIntervalInSeconds * 1000);
-setTimeout(pollIncidentsAndShowThem(pollParams),  100);
+setTimeout(pollIncidentsAndShowThem(pollParams), 100);
 browser.browserAction.onClicked.addListener(openPagerDutyWebsite({ account, statuses: onClickStatuses }));
