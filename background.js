@@ -8,11 +8,11 @@ const POLL_PARAMS = {
 }
 
 const pdapi = new PagerDutyAPI(pagerDutyApiKey);
-const pdClient = new PagerDutyClient(pdapi);
+var pdClient = new PagerDutyClient(pdapi);
 const incidentBadge = new IncidentBadge();
 const incidentNotification = new IncidentNotification();
 
-
+var state = {};
 var knownIncidentIdsState = new Set();
 
 const openPagerDutyWebsite = ({ account, statuses }) => () => {
@@ -32,12 +32,17 @@ const pollIncidentsAndShowThem = (pollParams) => () =>
     .then(tap(incidentBadge.updateBadge))
     .then(categorizeIncidentIds(knownIncidentIdsState))
     .then(tap(updateKnownIncidents))
+    .then(tap(updateState))
     .then(tap(incidentNotification.showNotificationsForNewIncidents))
 
 const updateKnownIncidents = ({ knownIncidentIds }) => {
   knownIncidentIdsState = knownIncidentIds;
 }
 
+const updateState = ({ incidents }) => {
+  state = { incidents }
+}
+
 setInterval(pollIncidentsAndShowThem(POLL_PARAMS), POLL_INTERVAL_IN_SECONDS * 1000);
-setTimeout(pollIncidentsAndShowThem(POLL_PARAMS), 100);
+setTimeout(pollIncidentsAndShowThem(POLL_PARAMS), 400);
 browser.browserAction.onClicked.addListener(openPagerDutyWebsite({ account, statuses: ON_CLICK_STATUSES }));

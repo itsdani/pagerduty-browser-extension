@@ -2,28 +2,25 @@
   "manifest_version": 2,
   "name": "pagerduty",
   "version": "1.0",
-
   "description": "Notifies you when you get pagerduty alerts.",
   "homepage_url": "https://github.com/emartech/firefox-pagerduty-extension",
   "icons": {
     "48": "icons/border-48.png"
   },
-
   "permissions": [
     "tabs",
+    "activeTab",
     "notifications"
   ],
-
   "browser_action": {
     "default_icon": "icons/border-48.png",
-    "default_title": "pagerduty"
+    "default_title": "pagerduty",
+    "default_popup": "popup/incident-list.html"
   },
-  
   "options_ui": {
     "chrome_style": true,
     "page": "options.html"
   },
-
   "background": {
     "scripts": [
       "lib/util.js",
@@ -36,4 +33,3 @@
     ]
   }
 }
-

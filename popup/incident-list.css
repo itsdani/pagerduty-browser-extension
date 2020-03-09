@@ -1,0 +1,25 @@
+/* .incident-card {
+  font-family: Roboto, Arial, Helvetica, sans-serif;
+  background-color: whitesmoke;
+  padding: 2px;
+  margin: 2px;
+  border-radius: 2px;
+} */
+.popup-window{
+  min-height: 100px;
+  min-width: 360px;
+  display: inline-block;
+}
+
+.incident-card.mdl-card {
+  font-family: Roboto, Arial, Helvetica, sans-serif;
+  width: 340px;
+  min-height: 100px;
+  margin: 8px;
+}
+
+.mdl-layout{
+  min-width: 350px;
+  min-height: 20px;
+  /* height: 100%; */
+}
