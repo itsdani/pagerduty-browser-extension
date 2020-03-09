@@ -1,5 +1,7 @@
+var backgroundWindow = {};
+
 async function renderIncidentList() {
-  const backgroundWindow = await browser.runtime.getBackgroundPage();
+  backgroundWindow = await browser.runtime.getBackgroundPage();
 
   const localState = backgroundWindow.state;
 
@@ -59,6 +61,7 @@ function incidentButtons(incident) {
 function acknowledgeButton(incident) {
   const ackButton = document.createElement("Button");
   ackButton.classList.add("mdl-button", "mdl-button--colored", "mdl-js-button", "mdl-js-ripple-effect");
+  ackButton.addEventListener("click", backgroundWindow.acknowledgeIncident(incident));
   ackButton.innerText = "Acknowledge";
   return ackButton;
 }
@@ -66,6 +69,7 @@ function acknowledgeButton(incident) {
 function resolveButton(incident) {
   const resolveButton = document.createElement("div");
   resolveButton.classList.add("mdl-button", "mdl-js-button", "mdl-button--raised", "mdl-js-ripple-effect", "mdl-button--primary");
+  resolveButton.addEventListener("click", backgroundWindow.resolveIncident(incident));
   resolveButton.innerText = "Resolve";
   return resolveButton;
 }

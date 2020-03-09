@@ -43,6 +43,18 @@ const updateState = ({ incidents }) => {
   state = { incidents }
 }
 
+function acknowledgeIncident(incident) {
+  return (event) => {
+    pdClient.acknowledgeIncident(incident);
+  }
+}
+
+function resolveIncident(incident) {
+  return (event) => {
+    pdClient.resolveIncident(incident);
+  }
+}
+
 setInterval(pollIncidentsAndShowThem(POLL_PARAMS), POLL_INTERVAL_IN_SECONDS * 1000);
 setTimeout(pollIncidentsAndShowThem(POLL_PARAMS), 400);
 browser.browserAction.onClicked.addListener(openPagerDutyWebsite({ account, statuses: ON_CLICK_STATUSES }));
