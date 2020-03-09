@@ -27,7 +27,7 @@ const categorizeIncidentIds = (knownIncidentIds) => (incidents) => ({
   knownIncidentIds: new Set(incidents.map(incident => incident.id))
 })
 
-const pollIncidentsAndShowThem = (pollParams) => () =>
+const pollIncidentsAndShowThem = (pollParams) => async () =>
   pdClient.pollNewIncidents(pollParams)
     .then(tap(incidentBadge.updateBadge))
     .then(categorizeIncidentIds(knownIncidentIdsState))
@@ -43,16 +43,24 @@ const updateState = ({ incidents }) => {
   state = { incidents }
 }
 
-function acknowledgeIncident(incident) {
-  return (event) => {
-    pdClient.acknowledgeIncident(incident);
-  }
+async function acknowledgeIncident(incident) {
+  pdClient.acknowledgeIncident(incident).then(
+    state.incidents.forEach(stateIncident => {
+      if (stateIncident.id == incident.id) {
+        stateIncident.status = "acknowledged";
+      }
+    })
+  )
 }
 
-function resolveIncident(incident) {
-  return (event) => {
-    pdClient.resolveIncident(incident);
-  }
+async function resolveIncident(incident) {
+  pdClient.resolveIncident(incident).then(
+    state.incidents.forEach(stateIncident => {
+      if (stateIncident.id == incident.id) {
+        stateIncident.status = "resolved";
+      }
+    })
+  )
 }
 
 setInterval(pollIncidentsAndShowThem(POLL_PARAMS), POLL_INTERVAL_IN_SECONDS * 1000);

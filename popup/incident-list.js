@@ -12,25 +12,31 @@ async function renderIncidentLists() {
 function renderIncidentList(state) {
   const incidentContainer = document.querySelector("#incidents-container");
 
+  const newContainer = incidentContainer.cloneNode(false);
   state.incidents.forEach(incident => {
-    incidentContainer.appendChild(createCard(incident));
+    newContainer.appendChild(createCard(incident));
   });
+  incidentContainer.replaceWith(newContainer);
 }
 
 function renderHighIncidentList(state) {
   const incidentContainer = document.querySelector("#incidents-container-high");
-
+  const newContainer = incidentContainer.cloneNode(false);
+  
   state.incidents.filter(incident => incident.urgency == 'high').forEach(incident => {
-    incidentContainer.appendChild(createCard(incident));
+    newContainer.appendChild(createCard(incident));
   });
+  incidentContainer.replaceWith(newContainer);
 }
 
 function renderLowIncidentList(state) {
   const incidentContainer = document.querySelector("#incidents-container-low");
-
+  const newContainer = incidentContainer.cloneNode(false);
+  
   state.incidents.filter(incident => incident.urgency == 'low').forEach(incident => {
-    incidentContainer.appendChild(createCard(incident));
+    newContainer.appendChild(createCard(incident));
   });
+  incidentContainer.replaceWith(newContainer);
 }
 
 function createCard(incident) {
@@ -39,6 +45,8 @@ function createCard(incident) {
   
   if (incident.status == "acknowledged") {
     incidentCard.classList.add("incident-acknowledged");
+  } else if (incident.status == "resolved") {
+    incidentCard.classList.add("incident-resolved");
   } else {
     incidentCard.classList.add("incident-triggered");
   }
@@ -68,7 +76,7 @@ function incidentDescription(incident) {
 
 function incidentButtons(incident) {
   const buttonsContainer = document.createElement("div");
-  buttonsContainer.classList.add("mdl-card__actions","mdl-card--border");
+  buttonsContainer.classList.add("mdl-card__actions", "mdl-card--border");
   buttonsContainer.appendChild(acknowledgeButton(incident));
   buttonsContainer.appendChild(resolveButton(incident));
 
@@ -78,7 +86,9 @@ function incidentButtons(incident) {
 function acknowledgeButton(incident) {
   const ackButton = document.createElement("Button");
   ackButton.classList.add("mdl-button", "mdl-button--colored", "mdl-js-button", "mdl-js-ripple-effect");
-  ackButton.addEventListener("click", backgroundWindow.acknowledgeIncident(incident));
+  ackButton.addEventListener("click", (event) =>
+    backgroundWindow.acknowledgeIncident(incident).then(renderIncidentLists())
+  );
   ackButton.innerText = "Acknowledge";
   return ackButton;
 }
@@ -86,10 +96,11 @@ function acknowledgeButton(incident) {
 function resolveButton(incident) {
   const resolveButton = document.createElement("div");
   resolveButton.classList.add("mdl-button", "mdl-js-button", "mdl-button--raised", "mdl-js-ripple-effect", "mdl-button--primary");
-  resolveButton.addEventListener("click", backgroundWindow.resolveIncident(incident));
+  resolveButton.addEventListener("click", (event) =>
+    backgroundWindow.resolveIncident(incident).then(renderIncidentLists())
+  );
   resolveButton.innerText = "Resolve";
   return resolveButton;
 }
-
 
 renderIncidentLists();
