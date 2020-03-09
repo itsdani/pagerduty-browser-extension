@@ -1,35 +1,34 @@
 var backgroundWindow = {};
 
-async function renderIncidentList() {
+
+async function renderIncidentLists() {
   backgroundWindow = await browser.runtime.getBackgroundPage();
-
   const localState = backgroundWindow.state;
+  renderIncidentList(localState);
+  renderHighIncidentList(localState);
+  renderLowIncidentList(localState);
+}
 
+function renderIncidentList(state) {
   const incidentContainer = document.querySelector("#incidents-container");
 
-  localState.incidents.forEach(incident => {
+  state.incidents.forEach(incident => {
     incidentContainer.appendChild(createCard(incident));
   });
 }
-async function renderHighIncidentList() {
-  const backgroundWindow = await browser.runtime.getBackgroundPage();
 
-  const localState = backgroundWindow.state;
-
+function renderHighIncidentList(state) {
   const incidentContainer = document.querySelector("#incidents-container-high");
 
-  localState.incidents.filter(incident => incident.urgency == 'high').forEach(incident => {
+  state.incidents.filter(incident => incident.urgency == 'high').forEach(incident => {
     incidentContainer.appendChild(createCard(incident));
   });
 }
-async function renderLowIncidentList() {
-  const backgroundWindow = await browser.runtime.getBackgroundPage();
 
-  const localState = backgroundWindow.state;
-
+function renderLowIncidentList(state) {
   const incidentContainer = document.querySelector("#incidents-container-low");
 
-  localState.incidents.filter(incident => incident.urgency == 'low').forEach(incident => {
+  state.incidents.filter(incident => incident.urgency == 'low').forEach(incident => {
     incidentContainer.appendChild(createCard(incident));
   });
 }
@@ -37,7 +36,14 @@ async function renderLowIncidentList() {
 function createCard(incident) {
   const incidentCard = document.createElement("div");
   incidentCard.classList.add("incident-card", "mdl-card", "mdl-shadow--2dp");
+  
+  if (incident.status == "acknowledged") {
+    incidentCard.classList.add("incident-acknowledged");
+  } else {
+    incidentCard.classList.add("incident-triggered");
+  }
   incidentCard.appendChild(incidentTitle(incident));
+  incidentCard.appendChild(incidentDescription(incident));
   incidentCard.appendChild(incidentButtons(incident));
   return incidentCard;
 }
@@ -47,6 +53,17 @@ function incidentTitle(incident) {
   incidentTitle.classList.add("mdl-card__title");
   incidentTitle.innerText = incident.title;
   return incidentTitle;
+}
+
+function incidentDescription(incident) {
+  const incidentDescription = document.createElement("div");
+  incidentDescription.classList.add("mdl-card__supporting-text");
+  text = "";
+  if (!!incident.assignments[0]) {
+    text += incident.assignments[0].assignee.summary;
+  }
+  incidentDescription.innerText = incident.assignments[0].assignee.summary;
+  return incidentDescription;
 }
 
 function incidentButtons(incident) {
@@ -75,6 +92,4 @@ function resolveButton(incident) {
 }
 
 
-renderIncidentList();
-renderHighIncidentList();
-renderLowIncidentList();
+renderIncidentLists();
