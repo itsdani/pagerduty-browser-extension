@@ -23,6 +23,7 @@
   },
   "background": {
     "scripts": [
+      "lib/cross-browser-api.js",
       "lib/util.js",
       "lib/pd-client.js",
       "lib/incident-notification.js",
