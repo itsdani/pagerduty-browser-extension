@@ -7,10 +7,12 @@ const POLL_PARAMS = {
   teamIds
 }
 
+const crossplatform = new CrossBrowserApi();
+
 const pdapi = new PagerDutyAPI(pagerDutyApiKey);
-var pdClient = new PagerDutyClient(pdapi);
-const incidentBadge = new IncidentBadge();
-const incidentNotification = new IncidentNotification();
+const pdClient = new PagerDutyClient(pdapi);
+const incidentBadge = new IncidentBadge(crossplatform);
+const incidentNotification = new IncidentNotification(crossplatform);
 
 var state = {};
 var knownIncidentIdsState = new Set();
@@ -18,7 +20,7 @@ var knownIncidentIdsState = new Set();
 const openPagerDutyWebsite = ({ account, statuses }) => () => {
   statusesParams = '?status=' + statuses.join(',');
   const url = 'https://' + account + '.pagerduty.com/incidents' + statusesParams;
-  browser.tabs.create({ url });
+  crossplatform.tabs.create({ url });
 }
 
 const categorizeIncidentIds = (knownIncidentIds) => (incidents) => ({
@@ -65,4 +67,3 @@ async function resolveIncident(incident) {
 
 setInterval(pollIncidentsAndShowThem(POLL_PARAMS), POLL_INTERVAL_IN_SECONDS * 1000);
 setTimeout(pollIncidentsAndShowThem(POLL_PARAMS), 400);
-browser.browserAction.onClicked.addListener(openPagerDutyWebsite({ account, statuses: ON_CLICK_STATUSES }));

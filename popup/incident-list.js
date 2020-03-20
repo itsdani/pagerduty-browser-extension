@@ -1,106 +1,111 @@
-var backgroundWindow = {};
+const crossplatform = new CrossBrowserApi();
+class IncidentListPage {
+  backgroundWindow;
+  state;
 
-
-async function renderIncidentLists() {
-  backgroundWindow = await browser.runtime.getBackgroundPage();
-  const localState = backgroundWindow.state;
-  renderIncidentList(localState);
-  renderHighIncidentList(localState);
-  renderLowIncidentList(localState);
-}
-
-function renderIncidentList(state) {
-  const incidentContainer = document.querySelector("#incidents-container");
-
-  const newContainer = incidentContainer.cloneNode(false);
-  state.incidents.forEach(incident => {
-    newContainer.appendChild(createCard(incident));
-  });
-  incidentContainer.replaceWith(newContainer);
-}
-
-function renderHighIncidentList(state) {
-  const incidentContainer = document.querySelector("#incidents-container-high");
-  const newContainer = incidentContainer.cloneNode(false);
-  
-  state.incidents.filter(incident => incident.urgency == 'high').forEach(incident => {
-    newContainer.appendChild(createCard(incident));
-  });
-  incidentContainer.replaceWith(newContainer);
-}
-
-function renderLowIncidentList(state) {
-  const incidentContainer = document.querySelector("#incidents-container-low");
-  const newContainer = incidentContainer.cloneNode(false);
-  
-  state.incidents.filter(incident => incident.urgency == 'low').forEach(incident => {
-    newContainer.appendChild(createCard(incident));
-  });
-  incidentContainer.replaceWith(newContainer);
-}
-
-function createCard(incident) {
-  const incidentCard = document.createElement("div");
-  incidentCard.classList.add("incident-card", "mdl-card", "mdl-shadow--2dp");
-  
-  if (incident.status == "acknowledged") {
-    incidentCard.classList.add("incident-acknowledged");
-  } else if (incident.status == "resolved") {
-    incidentCard.classList.add("incident-resolved");
-  } else {
-    incidentCard.classList.add("incident-triggered");
+  getBackgroundWindow() {
+    return new Promise(resolve => crossplatform.runtime.getBackgroundPage(resolve));
   }
-  incidentCard.appendChild(incidentTitle(incident));
-  incidentCard.appendChild(incidentDescription(incident));
-  incidentCard.appendChild(incidentButtons(incident));
-  return incidentCard;
-}
 
-function incidentTitle(incident) {
-  const incidentTitle = document.createElement("div");
-  incidentTitle.classList.add("mdl-card__title");
-  incidentTitle.innerText = incident.title;
-  return incidentTitle;
-}
-
-function incidentDescription(incident) {
-  const incidentDescription = document.createElement("div");
-  incidentDescription.classList.add("mdl-card__supporting-text");
-  text = "";
-  if (!!incident.assignments[0]) {
-    text += incident.assignments[0].assignee.summary;
+  renderIncidentLists() {
+    this.renderIncidentList(this.state);
+    this.renderHighIncidentList(this.state);
+    this.renderLowIncidentList(this.state);
   }
-  incidentDescription.innerText = incident.assignments[0].assignee.summary;
-  return incidentDescription;
+
+  renderIncidentList(state) {
+    const incidentContainer = document.querySelector("#incidents-container");
+
+    const newContainer = incidentContainer.cloneNode(false);
+    state.incidents.forEach(incident => {
+      newContainer.appendChild(this.createCard(incident));
+    });
+    incidentContainer.replaceWith(newContainer);
+  }
+
+  renderHighIncidentList(state) {
+    const incidentContainer = document.querySelector("#incidents-container-high");
+    const newContainer = incidentContainer.cloneNode(false);
+
+    state.incidents.filter(incident => incident.urgency == 'high').forEach(incident => {
+      newContainer.appendChild(this.createCard(incident));
+    });
+    incidentContainer.replaceWith(newContainer);
+  }
+
+  renderLowIncidentList(state) {
+    const incidentContainer = document.querySelector("#incidents-container-low");
+    const newContainer = incidentContainer.cloneNode(false);
+
+    state.incidents.filter(incident => incident.urgency == 'low').forEach(incident => {
+      newContainer.appendChild(this.createCard(incident));
+    });
+    incidentContainer.replaceWith(newContainer);
+  }
+
+  createCard(incident) {
+    const incidentCard = document.createElement("div");
+    incidentCard.classList.add("incident-card", "mdl-card", "mdl-shadow--2dp");
+
+    if (incident.status == "acknowledged") {
+      incidentCard.classList.add("incident-acknowledged");
+    } else if (incident.status == "resolved") {
+      incidentCard.classList.add("incident-resolved");
+    } else {
+      incidentCard.classList.add("incident-triggered");
+    }
+    incidentCard.appendChild(this.incidentTitle(incident));
+    incidentCard.appendChild(this.incidentDescription(incident));
+    incidentCard.appendChild(this.incidentButtons(incident));
+    return incidentCard;
+  }
+
+  incidentTitle(incident) {
+    const incidentTitle = document.createElement("div");
+    incidentTitle.classList.add("mdl-card__title");
+    incidentTitle.innerText = incident.title;
+    return incidentTitle;
+  }
+
+  incidentDescription(incident) {
+    const incidentDescription = document.createElement("div");
+    incidentDescription.classList.add("mdl-card__supporting-text");
+    let assignedTo = "";
+    if (!!incident.assignments[0]) {
+      assignedTo += incident.assignments[0].assignee.summary;
+    }
+    incidentDescription.innerHTML = assignedTo;
+    return incidentDescription;
+  }
+
+  incidentButtons(incident) {
+    const buttonsContainer = document.createElement("div");
+    buttonsContainer.classList.add("mdl-card__actions", "mdl-card--border");
+    buttonsContainer.appendChild(this.acknowledgeButton(incident));
+    buttonsContainer.appendChild(this.resolveButton(incident));
+
+    return buttonsContainer;
+  }
+
+  acknowledgeButton(incident) {
+    const ackButton = document.createElement("Button");
+    ackButton.classList.add("mdl-button", "mdl-button--colored", "mdl-js-button", "mdl-js-ripple-effect");
+    ackButton.addEventListener("click", () => this.backgroundWindow.acknowledgeIncident(incident).then(this.renderIncidentLists()));
+    ackButton.innerText = "Acknowledge";
+    return ackButton;
+  }
+
+  resolveButton(incident) {
+    const resolveButton = document.createElement("div");
+    resolveButton.classList.add("mdl-button", "mdl-js-button", "mdl-button--raised", "mdl-js-ripple-effect", "mdl-button--primary");
+    resolveButton.addEventListener("click", () => this.backgroundWindow.resolveIncident(incident).then(this.renderIncidentLists()));
+    resolveButton.innerText = "Resolve";
+    return resolveButton;
+  }
 }
 
-function incidentButtons(incident) {
-  const buttonsContainer = document.createElement("div");
-  buttonsContainer.classList.add("mdl-card__actions", "mdl-card--border");
-  buttonsContainer.appendChild(acknowledgeButton(incident));
-  buttonsContainer.appendChild(resolveButton(incident));
-
-  return buttonsContainer;
-}
-
-function acknowledgeButton(incident) {
-  const ackButton = document.createElement("Button");
-  ackButton.classList.add("mdl-button", "mdl-button--colored", "mdl-js-button", "mdl-js-ripple-effect");
-  ackButton.addEventListener("click", (event) =>
-    backgroundWindow.acknowledgeIncident(incident).then(renderIncidentLists())
-  );
-  ackButton.innerText = "Acknowledge";
-  return ackButton;
-}
-
-function resolveButton(incident) {
-  const resolveButton = document.createElement("div");
-  resolveButton.classList.add("mdl-button", "mdl-js-button", "mdl-button--raised", "mdl-js-ripple-effect", "mdl-button--primary");
-  resolveButton.addEventListener("click", (event) =>
-    backgroundWindow.resolveIncident(incident).then(renderIncidentLists())
-  );
-  resolveButton.innerText = "Resolve";
-  return resolveButton;
-}
-
-renderIncidentLists();
+const incidentListPage = new IncidentListPage();
+incidentListPage.getBackgroundWindow()
+  .then(backgroundWindow => incidentListPage.backgroundWindow = backgroundWindow)
+  .then(() => incidentListPage.state = incidentListPage.backgroundWindow.state)
+  .then(() => incidentListPage.renderIncidentLists());
