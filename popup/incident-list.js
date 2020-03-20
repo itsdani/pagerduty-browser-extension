@@ -74,7 +74,8 @@ class IncidentListPage {
     if (!!incident.assignments[0]) {
       assignedTo += incident.assignments[0].assignee.summary;
     }
-    incidentDescription.innerHTML = assignedTo;
+    const createdAt = new Date(incident.created_at).toLocaleString();
+    incidentDescription.innerHTML = [assignedTo, createdAt].join('<br>');
     return incidentDescription;
   }
 
