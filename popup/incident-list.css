@@ -23,6 +23,13 @@
   background-color: #dcf4dc;
 }
 
+a.incident-link {
+  color: #424242;
+  text-decoration: none;
+  margin: 0;
+  opacity: .87;
+}
+
 .mdl-layout{
   min-width: 350px;
   min-height: 400px;

@@ -61,10 +61,16 @@ class IncidentListPage {
   }
 
   incidentTitle(incident) {
+    const linkWrapper = document.createElement("a");
+    linkWrapper.classList.add("incident-link");
+    linkWrapper.href = incident.html_url;
+    
     const incidentTitle = document.createElement("div");
     incidentTitle.classList.add("mdl-card__title");
     incidentTitle.innerText = incident.title;
-    return incidentTitle;
+
+    linkWrapper.appendChild(incidentTitle);
+    return linkWrapper;
   }
 
   incidentDescription(incident) {
