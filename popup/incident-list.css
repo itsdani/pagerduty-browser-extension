@@ -23,6 +23,21 @@
   background-color: #dcf4dc;
 }
 
+.incident-icon {
+  padding-right: 0.3em;
+}
+
+.low-incident-icon {
+  color: #424242;
+  opacity: 0.6;
+  float: left;
+}
+
+.high-incident-icon {
+  color: #f53131;
+  float: left;
+}
+
 a.incident-link {
   color: #424242;
   text-decoration: none;

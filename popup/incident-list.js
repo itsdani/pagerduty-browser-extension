@@ -63,12 +63,36 @@ class IncidentListPage {
     linkWrapper.classList.add("incident-link");
     linkWrapper.href = incident.html_url;
     
+    
     const incidentTitle = document.createElement("div");
     incidentTitle.classList.add("mdl-card__title");
-    incidentTitle.innerText = incident.title;
+    
+    const incidentIcon = this.incidentIcon(incident)
+    const incidentTitleText = document.createElement("span");
+    incidentTitleText.innerText = incident.title;
+
+    incidentTitle.appendChild(incidentIcon);
+    incidentTitle.appendChild(incidentTitleText);
 
     linkWrapper.appendChild(incidentTitle);
     return linkWrapper;
+  }
+
+  incidentIcon(incident) {
+    const incidentIcon = document.createElement("div");
+    incidentIcon.classList.add("icon", "material-icons", "incident-icon");
+    switch (incident.urgency) {
+      case "high":
+        incidentIcon.classList.add("high-incident-icon");
+        incidentIcon.innerText = "priority_high";
+        break;
+        default:
+          incidentIcon.classList.add("low-incident-icon");
+          incidentIcon.innerText = "low_priority";
+        break;
+    }
+
+    return incidentIcon;
   }
 
   incidentDescription(incident) {
