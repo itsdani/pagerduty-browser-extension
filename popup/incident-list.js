@@ -31,14 +31,17 @@ class IncidentListPage {
   _renderIncidentList(container, incidents, filter) {
     const newContainer = container.cloneNode(false);
 
-    incidents.filter(filter).sort(this._createdAtOrdering).forEach(incident => {
+    incidents.filter(filter).sort(this.defaultIncidentOrdering).forEach(incident => {
       newContainer.appendChild(this.createCard(incident));
     });
     container.replaceWith(newContainer);
   }
 
-  _createdAtOrdering(incident1, incident2) {
-    return new Date(incident2.created_at) - new Date(incident1.created_at)
+  defaultIncidentOrdering(incident1, incident2) {
+    const dateOrdering = (a, b) => new Date(b.created_at) - new Date(a.created_at);
+    const complexOrdering = (a, b) => a.urgency == "high" ? (b.urgency == "high" ? dateOrdering(a, b) : -1) : (b.urgency == "high" ? 1 : dateOrdering(a, b))
+
+    return complexOrdering(incident1, incident2);
   }
 
   createCard(incident) {
