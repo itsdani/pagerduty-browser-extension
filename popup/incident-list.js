@@ -8,39 +8,37 @@ class IncidentListPage {
   }
 
   renderIncidentLists() {
-    this.renderIncidentList(this.state);
+    this.renderAllIncidentList(this.state);
     this.renderHighIncidentList(this.state);
     this.renderLowIncidentList(this.state);
   }
 
-  renderIncidentList(state) {
+  renderAllIncidentList(state) {
     const incidentContainer = document.querySelector("#incidents-container");
-
-    const newContainer = incidentContainer.cloneNode(false);
-    state.incidents.forEach(incident => {
-      newContainer.appendChild(this.createCard(incident));
-    });
-    incidentContainer.replaceWith(newContainer);
+    this._renderIncidentList(incidentContainer, state.incidents, () => true);
   }
 
   renderHighIncidentList(state) {
     const incidentContainer = document.querySelector("#incidents-container-high");
-    const newContainer = incidentContainer.cloneNode(false);
-
-    state.incidents.filter(incident => incident.urgency == 'high').forEach(incident => {
-      newContainer.appendChild(this.createCard(incident));
-    });
-    incidentContainer.replaceWith(newContainer);
+    this._renderIncidentList(incidentContainer, state.incidents, incident => incident.urgency == 'high');
   }
 
   renderLowIncidentList(state) {
     const incidentContainer = document.querySelector("#incidents-container-low");
-    const newContainer = incidentContainer.cloneNode(false);
+    this._renderIncidentList(incidentContainer, state.incidents, incident => incident.urgency == 'low');
+  }
 
-    state.incidents.filter(incident => incident.urgency == 'low').forEach(incident => {
+  _renderIncidentList(container, incidents, filter) {
+    const newContainer = container.cloneNode(false);
+
+    incidents.filter(filter).sort(this._createdAtOrdering).forEach(incident => {
       newContainer.appendChild(this.createCard(incident));
     });
-    incidentContainer.replaceWith(newContainer);
+    container.replaceWith(newContainer);
+  }
+
+  _createdAtOrdering(incident1, incident2) {
+    return new Date(incident2.created_at) - new Date(incident1.created_at)
   }
 
   createCard(incident) {
