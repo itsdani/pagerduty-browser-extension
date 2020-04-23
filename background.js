@@ -47,8 +47,8 @@ const updateState = ({ incidents }) => {
   state = { ...state, incidents }
 }
 
-async function acknowledgeIncident(incident) {
-  pdClient.acknowledgeIncident(incident).then(
+function acknowledgeIncident(incident) {
+  return pdClient.acknowledgeIncident(incident).then(
     state.incidents.forEach(stateIncident => {
       if (stateIncident.id == incident.id) {
         stateIncident.status = "acknowledged";
@@ -57,8 +57,8 @@ async function acknowledgeIncident(incident) {
   )
 }
 
-async function resolveIncident(incident) {
-  pdClient.resolveIncident(incident).then(
+function resolveIncident(incident) {
+  return pdClient.resolveIncident(incident).then(
     state.incidents.forEach(stateIncident => {
       if (stateIncident.id == incident.id) {
         stateIncident.status = "resolved";
