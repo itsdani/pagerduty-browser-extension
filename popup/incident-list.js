@@ -8,19 +8,12 @@ class IncidentListPage {
   }
 
   renderIncidentLists() {
-    // this.renderIncidentsByUrgency(this.state);
     this.renderIncidentsByAssignee(this.state);
   }
 
   renderIncidentsByAssignee() {
     this.renderMyIncidentList(this.state);
     this.renderTeamIncidentList(this.state);
-  }
-
-  renderIncidentsByUrgency() {
-    this.renderAllIncidentList(this.state);
-    this.renderHighIncidentList(this.state);
-    this.renderLowIncidentList(this.state);
   }
 
   renderTeamIncidentList(state) {
@@ -31,21 +24,6 @@ class IncidentListPage {
   renderMyIncidentList(state) {
     const incidentContainer = document.querySelector("#incidents-container-mine");
     this._renderIncidentList(incidentContainer, state.incidents, incident => incident.assignments[0].assignee.id == state.userId);
-  }
-
-  renderAllIncidentList(state) {
-    const incidentContainer = document.querySelector("#incidents-container");
-    this._renderIncidentList(incidentContainer, state.incidents, () => true);
-  }
-
-  renderHighIncidentList(state) {
-    const incidentContainer = document.querySelector("#incidents-container-high");
-    this._renderIncidentList(incidentContainer, state.incidents, incident => incident.urgency == 'high');
-  }
-
-  renderLowIncidentList(state) {
-    const incidentContainer = document.querySelector("#incidents-container-low");
-    this._renderIncidentList(incidentContainer, state.incidents, incident => incident.urgency == 'low');
   }
 
   _renderIncidentList(container, incidents, filter) {
