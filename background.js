@@ -14,7 +14,9 @@ const pdClient = new PagerDutyClient(pdapi);
 const incidentBadge = new IncidentBadge(crossplatform);
 const incidentNotification = new IncidentNotification(crossplatform);
 
-var state = {};
+var state = {
+  userId
+};
 var knownIncidentIdsState = new Set();
 
 const openPagerDutyWebsite = ({ account, statuses }) => () => {
@@ -42,7 +44,7 @@ const updateKnownIncidents = ({ knownIncidentIds }) => {
 }
 
 const updateState = ({ incidents }) => {
-  state = { incidents }
+  state = { ...state, incidents }
 }
 
 async function acknowledgeIncident(incident) {

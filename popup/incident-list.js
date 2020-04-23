@@ -8,9 +8,29 @@ class IncidentListPage {
   }
 
   renderIncidentLists() {
+    // this.renderIncidentsByUrgency(this.state);
+    this.renderIncidentsByAssignee(this.state);
+  }
+
+  renderIncidentsByAssignee() {
+    this.renderMyIncidentList(this.state);
+    this.renderTeamIncidentList(this.state);
+  }
+
+  renderIncidentsByUrgency() {
     this.renderAllIncidentList(this.state);
     this.renderHighIncidentList(this.state);
     this.renderLowIncidentList(this.state);
+  }
+
+  renderTeamIncidentList(state) {
+    const incidentContainer = document.querySelector("#incidents-container-my-teams");
+    this._renderIncidentList(incidentContainer, state.incidents, () => true);
+  }
+
+  renderMyIncidentList(state) {
+    const incidentContainer = document.querySelector("#incidents-container-mine");
+    this._renderIncidentList(incidentContainer, state.incidents, incident => incident.assignments[0].assignee.id == state.userId);
   }
 
   renderAllIncidentList(state) {
