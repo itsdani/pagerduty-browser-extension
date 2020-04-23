@@ -15,7 +15,8 @@ const incidentBadge = new IncidentBadge(crossplatform);
 const incidentNotification = new IncidentNotification(crossplatform);
 
 var state = {
-  userId
+  userId,
+  account
 };
 var knownIncidentIdsState = new Set();
 

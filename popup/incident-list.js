@@ -7,6 +7,11 @@ class IncidentListPage {
     return new Promise(resolve => crossplatform.runtime.getBackgroundPage(resolve));
   }
 
+  setIncidentsLinkTarget() {
+    const incidentsLink = document.querySelector("#incidents-link");
+    incidentsLink.href = "https://" + this.state.account + ".pagerduty.com/incidents";
+  }
+
   renderIncidentLists() {
     this.renderIncidentsByAssignee(this.state);
   }
@@ -138,4 +143,5 @@ const incidentListPage = new IncidentListPage();
 incidentListPage.getBackgroundWindow()
   .then(backgroundWindow => incidentListPage.backgroundWindow = backgroundWindow)
   .then(() => incidentListPage.state = incidentListPage.backgroundWindow.state)
+  .then(() => incidentListPage.setIncidentsLinkTarget())
   .then(() => incidentListPage.renderIncidentLists());

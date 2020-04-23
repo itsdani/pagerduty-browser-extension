@@ -38,6 +38,11 @@
   float: left;
 }
 
+a.incidents-link {
+  color: inherit;
+  text-decoration: none;
+}
+
 a.incident-link {
   color: #424242;
   text-decoration: none;
