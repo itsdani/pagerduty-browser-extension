@@ -10,7 +10,8 @@
   "permissions": [
     "tabs",
     "activeTab",
-    "notifications"
+    "notifications",
+    "storage"
   ],
   "browser_action": {
     "default_icon": "icons/border-48.png",

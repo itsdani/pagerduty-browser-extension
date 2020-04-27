@@ -3,9 +3,67 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="/popup/incident-list.css"/>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+
+    <script src="/popup/material.min.js"></script>
+    
+    
   </head>
   
   <body>
-  </body>
+    <div class="popup-window">
+      <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+        <header class="mdl-layout__header">
+          <div class="mdl-layout__header-row">
+            <span class="mdl-layout-title">Settings</span>
+          </div>
+        </header>
+        <div class="mdl-layout__drawer">
+          <span class="mdl-layout-title">Settings</span>
+          <nav class="mdl-navigation">
+            <a class="mdl-navigation__link" href="/popup/incident-list.html">Incidents</a>
+            <a class="mdl-navigation__link" href="/options.html">Settings</a>
+          </nav>
+        </div>
+        <main class="mdl-layout__content">
+          <div id="settings-page-content" class="page-content">
+            <form action="#">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="mdl-account-name-input">
+                <input class="mdl-textfield__input" type="text" id="account-name-input">
+                <label class="mdl-textfield__label" for="account-name-input">Pager Duty account name</label>
+              </div>  
+              
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="mdl-user-id-input">
+                <input class="mdl-textfield__input" type="text" id="user-id-input">
+                <label class="mdl-textfield__label" for="user-id-input">User ID</label>
+              </div>  
+              
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="mdl-team-ids-input">
+                <input class="mdl-textfield__input" type="text" id="team-ids-input">
+                <label class="mdl-textfield__label" for="team-ids-input">Team IDs</label>
+              </div>  
+              
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="mdl-pd-api-key-input">
+                <input class="mdl-textfield__input" type="text" id="pd-api-key-input">
+                <label class="mdl-textfield__label" for="pd-api-key-input">Pager Duty API key</label>
+              </div>
+
+              <button class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" id="save-settings-button">
+                Save
+              </button>
+            </form>
+          </div>
+        </main>
+      </div>
+    </div>
+
+  
+  <script src = '/lib/cross-browser-api.js'></script>
+  <script src = '/popup/options.js'></script>
+</body>
 
 </html>

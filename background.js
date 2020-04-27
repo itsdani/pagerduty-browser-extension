@@ -48,6 +48,14 @@ const updateState = ({ incidents }) => {
   state = { ...state, incidents }
 }
 
+function getSettings() {
+  return crossplatform.storage.local.get(["accountName", "userId", "teamIds", "pdApiKey"]);
+}
+
+function setSettings({ accountName, userId, teamIds, pdApiKey }) {
+  return crossplatform.storage.local.set({ accountName, userId, teamIds, pdApiKey });
+}
+
 function acknowledgeIncident(incident) {
   return pdClient.acknowledgeIncident(incident).then(
     state.incidents.forEach(stateIncident => {

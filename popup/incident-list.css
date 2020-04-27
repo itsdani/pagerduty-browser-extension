@@ -4,6 +4,10 @@
   display: inline-block;
 }
 
+#settings-page-content{
+  padding: 1em;
+}
+
 .incident-card.mdl-card {
   font-family: Roboto, Arial, Helvetica, sans-serif;
   width: 340px;
