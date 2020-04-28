@@ -1,30 +1,26 @@
+var state = {
+  settings: { }
+};
+
 const POLL_INTERVAL_IN_SECONDS = 15;
 const NOTIFICATION_TIMEOUT_IN_SECONDS = 4;
 const ON_CLICK_STATUSES = ['triggered', 'acknowledged'];
-const POLL_PARAMS = {
-  statuses: ['triggered', 'acknowledged'],
-  urgencies: ['high', 'low'],
-  teamIds
+const POLL_PARAMS = () => {
+  return {
+    statuses: ['triggered', 'acknowledged'],
+    urgencies: ['high', 'low'],
+    teamIds: state.settings.teamIds
+  }
 }
 
 const crossplatform = new CrossBrowserApi();
 
-const pdapi = new PagerDutyAPI(pagerDutyApiKey);
+const pdapi = new PagerDutyAPI(state.settings.pdApiKey);
 const pdClient = new PagerDutyClient(pdapi);
 const incidentBadge = new IncidentBadge(crossplatform);
 const incidentNotification = new IncidentNotification(crossplatform);
 
-var state = {
-  userId,
-  account
-};
 var knownIncidentIdsState = new Set();
-
-const openPagerDutyWebsite = ({ account, statuses }) => () => {
-  statusesParams = '?status=' + statuses.join(',');
-  const url = 'https://' + account + '.pagerduty.com/incidents' + statusesParams;
-  crossplatform.tabs.create({ url });
-}
 
 const categorizeIncidentIds = (knownIncidentIds) => (incidents) => ({
   incidents,
@@ -32,24 +28,34 @@ const categorizeIncidentIds = (knownIncidentIds) => (incidents) => ({
   knownIncidentIds: new Set(incidents.map(incident => incident.id))
 })
 
-const pollIncidentsAndShowThem = (pollParams) => async () =>
+const pollIncidentsAndShowThem = (pollParams) =>
   pdClient.pollNewIncidents(pollParams)
     .then(tap(incidentBadge.updateBadge))
     .then(categorizeIncidentIds(knownIncidentIdsState))
     .then(tap(updateKnownIncidents))
-    .then(tap(updateState))
+    .then(tap(updateIncidentsInState))
     .then(tap(incidentNotification.showNotificationsForNewIncidents))
 
 const updateKnownIncidents = ({ knownIncidentIds }) => {
   knownIncidentIdsState = knownIncidentIds;
 }
 
-const updateState = ({ incidents }) => {
-  state = { ...state, incidents }
+const updateIncidentsInState = ({ incidents }) => {
+  state = { ...state, incidents };
 }
 
-function getSettings() {
-  return crossplatform.storage.local.get(["accountName", "userId", "teamIds", "pdApiKey"]);
+const updateSettingsInState = ({ accountName, userId, teamIds, pdApiKey }) => {
+  state = { ...state, settings: { ...state.settings, accountName, userId, teamIds: teamIds.split(','), pdApiKey } }
+  return state;
+}
+
+function loadSettingsIntoState() {
+  return crossplatform.storage.local.get(["accountName", "userId", "teamIds", "pdApiKey"])
+    .then(updateSettingsInState);
+}
+
+function updateApiKeyInPdClient() {
+  return pdapi.setApiKey(state.settings.pdApiKey)
 }
 
 function setSettings({ accountName, userId, teamIds, pdApiKey }) {
@@ -76,5 +82,6 @@ function resolveIncident(incident) {
   )
 }
 
-setInterval(pollIncidentsAndShowThem(POLL_PARAMS), POLL_INTERVAL_IN_SECONDS * 1000);
-setTimeout(pollIncidentsAndShowThem(POLL_PARAMS), 400);
+loadSettingsIntoState().then(() => updateApiKeyInPdClient());
+setInterval(async () => pollIncidentsAndShowThem(POLL_PARAMS()), POLL_INTERVAL_IN_SECONDS * 1000);
+setTimeout(async () => pollIncidentsAndShowThem(POLL_PARAMS()), 400);

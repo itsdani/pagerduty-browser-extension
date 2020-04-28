@@ -9,7 +9,7 @@ class IncidentListPage {
 
   setIncidentsLinkTarget() {
     const incidentsLink = document.querySelector("#incidents-link");
-    incidentsLink.href = "https://" + this.state.account + ".pagerduty.com/incidents";
+    incidentsLink.href = "https://" + this.state.settings.accountName + ".pagerduty.com/incidents";
   }
 
   renderIncidentLists() {
@@ -28,7 +28,7 @@ class IncidentListPage {
 
   renderMyIncidentList(state) {
     const incidentContainer = document.querySelector("#incidents-container-mine");
-    this._renderIncidentList(incidentContainer, state.incidents, incident => incident.assignments[0].assignee.id == state.userId);
+    this._renderIncidentList(incidentContainer, state.incidents, incident => incident.assignments[0].assignee.id == state.settings.userId);
   }
 
   _renderIncidentList(container, incidents, filter) {

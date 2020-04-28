@@ -7,21 +7,25 @@ class OptionsPage {
     return new Promise(resolve => crossplatform.runtime.getBackgroundPage(resolve));
   }
 
-  loadSettings() {
-    this.backgroundWindow.getSettings().then( settings => {
-      const accountNameInput = document.querySelector("#mdl-account-name-input");
-      accountNameInput.MaterialTextfield.change(settings.accountName);
-      
-      const userIdInput = document.querySelector("#mdl-user-id-input");
-      userIdInput.MaterialTextfield.change(settings.userId);
-      
-      const teamIdsInput = document.querySelector("#mdl-team-ids-input");
-      teamIdsInput.MaterialTextfield.change(settings.teamIds);
-      
-      const pdApiKeyInput = document.querySelector("#mdl-pd-api-key-input");
-      pdApiKeyInput.MaterialTextfield.change(settings.pdApiKey);
-    })
+  reloadState() {
+    this.state = this.backgroundWindow.state;
+  }
 
+  loadSettings() {
+    this.backgroundWindow.loadSettingsIntoState();
+  }
+
+  updateSettingsInputs() {
+    this.backgroundWindow.loadSettingsIntoState().then(state => {
+      document.querySelector(".mdl-textfield#mdl-account-name-input")
+        .MaterialTextfield.change(state.settings.accountName);
+      document.querySelector(".mdl-textfield#mdl-user-id-input")
+        .MaterialTextfield.change(state.settings.userId);
+      document.querySelector(".mdl-textfield#mdl-team-ids-input")
+        .MaterialTextfield.change(state.settings.teamIds);
+      document.querySelector(".mdl-textfield#mdl-pd-api-key-input")
+        .MaterialTextfield.change(state.settings.pdApiKey);
+    })
   }
 
   saveSettings() {
@@ -29,15 +33,17 @@ class OptionsPage {
     const userIdInput = document.querySelector("#user-id-input");
     const teamIdsInput = document.querySelector("#team-ids-input");
     const pdApiKeyInput = document.querySelector("#pd-api-key-input");
-    
+
     const settings = {
       accountName: accountNameInput.value,
       userId: userIdInput.value,
       teamIds: teamIdsInput.value,
       pdApiKey: pdApiKeyInput.value
     }
-    
-    this.backgroundWindow.setSettings(settings);
+
+    this.backgroundWindow.setSettings(settings)
+      .then(() => this.loadSettings())
+      .then(() => this.reloadState());
   }
 
 
@@ -50,6 +56,7 @@ class OptionsPage {
 const optionsPage = new OptionsPage();
 optionsPage.getBackgroundWindow()
   .then(backgroundWindow => optionsPage.backgroundWindow = backgroundWindow)
-  .then(() => optionsPage.state = optionsPage.backgroundWindow.state)
-  .then(() => optionsPage.addSaveSettingsButtonEventHandler())
-  .then(() => optionsPage.loadSettings());
+  .then(() => optionsPage.loadSettings())
+  .then(() => optionsPage.reloadState())
+  .then(() => optionsPage.updateSettingsInputs())
+  .then(() => optionsPage.addSaveSettingsButtonEventHandler());
