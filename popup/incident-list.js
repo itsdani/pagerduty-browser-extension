@@ -11,6 +11,28 @@ class IncidentListPage {
     const incidentsLink = document.querySelector("#incidents-link");
     incidentsLink.href = "https://" + this.state.settings.accountName + ".pagerduty.com/incidents";
   }
+  
+  setActiveTab() {
+    const myIncidents = this.state.incidents.filter(incident => incident.assignments[0].assignee.id == this.state.settings.userId)
+    const myIncidentCount = myIncidents.length;
+    const allIncidentCount = this.state.incidents.length;
+    
+    if (myIncidentCount === 0 && allIncidentCount > 0) {
+      this.setActiveTabTeams();
+    }
+  }
+  setActiveTabTeams() {
+    const mineTabLink = document.querySelector("#incident-tab-mine");
+    const mineTabContent = document.querySelector("#fixed-tab-1");
+    mineTabLink.classList.remove("is-active");
+    mineTabContent.classList.remove("is-active");
+    
+    const teamTabLink = document.querySelector("#incident-tab-teams");
+    const teamTabContent = document.querySelector("#fixed-tab-2");
+    teamTabLink.classList.add("is-active");
+    teamTabContent.classList.add("is-active");
+    
+  }
 
   renderIncidentLists() {
     this.renderIncidentsByAssignee(this.state);
@@ -144,4 +166,5 @@ incidentListPage.getBackgroundWindow()
   .then(backgroundWindow => incidentListPage.backgroundWindow = backgroundWindow)
   .then(() => incidentListPage.state = incidentListPage.backgroundWindow.state)
   .then(() => incidentListPage.setIncidentsLinkTarget())
+  .then(() => incidentListPage.setActiveTab())
   .then(() => incidentListPage.renderIncidentLists());
